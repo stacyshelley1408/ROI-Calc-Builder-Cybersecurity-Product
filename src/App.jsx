@@ -24,7 +24,6 @@ export const DEFAULT_CONFIG = {
     { id: 'employees', label: 'Number of Employees', type: 'range', default: 500, min: 10, max: 10000, step: 10, prefix: '', suffix: '', visible: true },
     { id: 'avg_salary', label: 'Average FTE Salary', type: 'number', default: 124910, min: 1, max: 500000, step: 1000, prefix: '$', suffix: '', visible: true },
     // ── Incidents & escalation ──
-    { id: 'incidents_per_year', label: 'Security Incidents / Year', type: 'range', default: 60, min: 5, max: 500, step: 5, prefix: '', suffix: '', visible: true },
     { id: 'hours_per_incident', label: 'Avg. Hours to Resolve Incident', type: 'range', default: 6, min: 1, max: 40, step: 1, prefix: '', suffix: '', visible: true },
     { id: 'escalation_rate', label: 'Incident-to-Breach Escalation Rate', type: 'number', default: 3, min: 0.1, max: 25, step: 0.5, prefix: '', suffix: '%', visible: false },
     // ── Breach cost factors ──
@@ -49,32 +48,32 @@ export const DEFAULT_CONFIG = {
   ],
   outputs: [
     {
+      id: 'security_incidents',
+      label: 'Estimated Security Incidents / Year',
+      formula: 'Math.round(employees * 0.12)',
+      format: 'number',
+      highlight: false,
+    },
+    {
+      id: 'security_breaches',
+      label: 'Estimated Security Breaches / Year',
+      formula: 'Math.round(employees * 0.12 * escalation_rate / 100 * 10) / 10',
+      format: 'number',
+      highlight: false,
+    },
+    {
       id: 'exposure_without',
       label: 'Current Annual Risk Exposure',
-      formula: '(incidents_per_year * escalation_rate / 100) * Math.sqrt(employees / 10000) * (records_at_risk * cost_per_record + downtime_days * daily_revenue + ir_cost + notification_legal_cost + customer_base * (post_breach_churn / 100) * customer_ltv) + incidents_per_year * hours_per_incident * (avg_salary / 2080) + employees * avg_salary * 0.05 + annual_audit_cost + fine_exposure * 0.15',
+      formula: '((employees * 0.12) * escalation_rate / 100) * Math.sqrt(employees / 10000) * (records_at_risk * cost_per_record + downtime_days * daily_revenue + ir_cost + notification_legal_cost + customer_base * (post_breach_churn / 100) * customer_ltv) + (employees * 0.12) * hours_per_incident * (avg_salary / 2080) + employees * avg_salary * 0.05 + annual_audit_cost + fine_exposure * 0.15',
       format: 'currency',
       highlight: false,
     },
     {
       id: 'exposure_with',
       label: 'Risk Exposure With {productName}',
-      formula: '(incidents_per_year * (1 - incident_reduction/100) * escalation_rate * (1 - escalation_reduction/100) / 100) * Math.sqrt(employees / 10000) * (records_at_risk * cost_per_record + downtime_days * (1 - downtime_reduction/100) * daily_revenue + ir_cost + notification_legal_cost + customer_base * (post_breach_churn / 100) * customer_ltv) + incidents_per_year * (1 - incident_reduction/100) * hours_per_incident * (avg_salary / 2080) + employees * avg_salary * 0.05 + (annual_audit_cost + fine_exposure * 0.15) * (1 - compliance_reduction/100)',
-      format: 'currency',
-      highlight: false,
-    },
-    {
-      id: 'annual_savings',
-      label: 'Annual Risk Reduction',
-      formula: '((incidents_per_year * escalation_rate / 100) * Math.sqrt(employees / 10000) * (records_at_risk * cost_per_record + downtime_days * daily_revenue + ir_cost + notification_legal_cost + customer_base * (post_breach_churn / 100) * customer_ltv) + incidents_per_year * hours_per_incident * (avg_salary / 2080) + employees * avg_salary * 0.05 + annual_audit_cost + fine_exposure * 0.15) - ((incidents_per_year * (1 - incident_reduction/100) * escalation_rate * (1 - escalation_reduction/100) / 100) * Math.sqrt(employees / 10000) * (records_at_risk * cost_per_record + downtime_days * (1 - downtime_reduction/100) * daily_revenue + ir_cost + notification_legal_cost + customer_base * (post_breach_churn / 100) * customer_ltv) + incidents_per_year * (1 - incident_reduction/100) * hours_per_incident * (avg_salary / 2080) + employees * avg_salary * 0.05 + (annual_audit_cost + fine_exposure * 0.15) * (1 - compliance_reduction/100))',
+      formula: '((employees * 0.12) * (1 - incident_reduction/100) * escalation_rate * (1 - escalation_reduction/100) / 100) * Math.sqrt(employees / 10000) * (records_at_risk * cost_per_record + downtime_days * (1 - downtime_reduction/100) * daily_revenue + ir_cost + notification_legal_cost + customer_base * (post_breach_churn / 100) * customer_ltv) + (employees * 0.12) * (1 - incident_reduction/100) * hours_per_incident * (avg_salary / 2080) + employees * avg_salary * 0.05 + (annual_audit_cost + fine_exposure * 0.15) * (1 - compliance_reduction/100)',
       format: 'currency',
       highlight: true,
-    },
-    {
-      id: 'roi',
-      label: 'ROI',
-      formula: '(((incidents_per_year * escalation_rate / 100) * Math.sqrt(employees / 10000) * (records_at_risk * cost_per_record + downtime_days * daily_revenue + ir_cost + notification_legal_cost + customer_base * (post_breach_churn / 100) * customer_ltv) + incidents_per_year * hours_per_incident * (avg_salary / 2080) + employees * avg_salary * 0.05 + annual_audit_cost + fine_exposure * 0.15) - ((incidents_per_year * (1 - incident_reduction/100) * escalation_rate * (1 - escalation_reduction/100) / 100) * Math.sqrt(employees / 10000) * (records_at_risk * cost_per_record + downtime_days * (1 - downtime_reduction/100) * daily_revenue + ir_cost + notification_legal_cost + customer_base * (post_breach_churn / 100) * customer_ltv) + incidents_per_year * (1 - incident_reduction/100) * hours_per_incident * (avg_salary / 2080) + employees * avg_salary * 0.05 + (annual_audit_cost + fine_exposure * 0.15) * (1 - compliance_reduction/100)) - product_cost) / product_cost * 100',
-      format: 'percent',
-      highlight: false,
     },
   ],
   cta: {
