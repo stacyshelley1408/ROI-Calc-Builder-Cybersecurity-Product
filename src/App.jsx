@@ -14,9 +14,9 @@ export const DEFAULT_CONFIG = {
   productName: 'Our Product',
   description: 'Quantify your total cybersecurity risk exposure across breaches, incidents, downtime, and compliance. See how much your organization can save.',
   brand: {
-    primaryColor: '#2563eb',
-    accentColor: '#16a34a',
-    fontFamily: 'Inter, system-ui, sans-serif',
+    primaryColor: '#1a8a80',
+    accentColor: '#00695c',
+    fontFamily: 'DM Sans, system-ui, sans-serif',
     logoUrl: '',
   },
   inputs: [

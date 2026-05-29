@@ -1,3 +1,18 @@
+:root {
+  --slate: #0d1117;
+  --slate-mid: #1c2b35;
+  --accent: #1a8a80;
+  --accent-light: #5ab8b0;
+  --warm: #00695c;
+  --warm-white: #f5f8f7;
+  --soft-gray: #eaf1f0;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
+  --border: #ccdeda;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 
 html, body, #root {
@@ -7,11 +22,13 @@ html, body, #root {
 }
 
 body {
-  font-family: Inter, system-ui, -apple-system, sans-serif;
-  background: #f1f5f9;
-  color: #1e293b;
+  font-family: var(--sans);
+  background: var(--warm-white);
+  color: var(--slate);
   -webkit-font-smoothing: antialiased;
   font-size: 14px;
+  font-weight: 300;
+  line-height: 1.6;
 }
 
 button, input, select, textarea { font-family: inherit; }
