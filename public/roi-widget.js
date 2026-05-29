@@ -165,6 +165,7 @@
       card.appendChild(inputsDiv);
 
       (config.inputs || []).forEach(function (inp) {
+        if (inp.visible === false) return;
         var field = document.createElement('div');
         field.className = 'rc-field';
 
@@ -235,7 +236,7 @@
 
         var lblEl = document.createElement('span');
         lblEl.className = 'rc-out-lbl';
-        lblEl.textContent = out.label;
+        lblEl.textContent = (out.label || '').replace(/\{productName\}/g, config.productName || 'Product');
         row.appendChild(lblEl);
 
         var valEl = document.createElement('span');

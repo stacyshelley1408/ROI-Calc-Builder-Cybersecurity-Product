@@ -581,3 +581,31 @@
 }
 
 .btn-row { display: flex; gap: 8px; margin-top: 16px; }
+
+/* ── input visibility toggle ── */
+.item-card.input-hidden {
+  opacity: 0.55;
+}
+
+.visibility-btn {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: .68rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid;
+  transition: background .1s, color .1s, border-color .1s;
+  white-space: nowrap;
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+
+.visibility-btn.off {
+  background: #f8fafc;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+}
+
+.visibility-btn:hover:not(.off) { background: #dcfce7; }
+.visibility-btn.off:hover { background: #f1f5f9; color: #64748b; }

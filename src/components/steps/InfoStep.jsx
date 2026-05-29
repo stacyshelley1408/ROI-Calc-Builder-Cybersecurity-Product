@@ -17,6 +17,16 @@ export default function InfoStep({ config, update }) {
       </div>
 
       <div className="form-group">
+        <label className="form-label">Product Name <span>(used in output labels)</span></label>
+        <input
+          className="form-input"
+          value={config.productName || ''}
+          onChange={e => update({ productName: e.target.value })}
+          placeholder="Our Product"
+        />
+      </div>
+
+      <div className="form-group">
         <label className="form-label">
           Description <span>(optional)</span>
         </label>

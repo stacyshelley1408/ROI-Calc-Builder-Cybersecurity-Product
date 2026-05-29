@@ -186,6 +186,13 @@ export default function InputsStep({ config, setInputs }) {
     setInputs(arr)
   }
 
+  function handleToggleVisible(idx) {
+    const inputs = config.inputs.map((inp, i) =>
+      i === idx ? { ...inp, visible: inp.visible === false ? true : false } : inp
+    )
+    setInputs(inputs)
+  }
+
   return (
     <div>
       <div className="step-header">
@@ -205,7 +212,7 @@ export default function InputsStep({ config, setInputs }) {
 
       <div className="item-list">
         {config.inputs.map((inp, idx) => (
-          <div key={inp.id + idx} className="item-card">
+          <div key={inp.id + idx} className={`item-card${inp.visible === false ? ' input-hidden' : ''}`}>
             <div className="item-card-head" onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}>
               <div className="item-card-info">
                 <div className="item-card-name">{inp.label || '(untitled)'}</div>
@@ -214,6 +221,13 @@ export default function InputsStep({ config, setInputs }) {
                 </div>
               </div>
               <div className="item-card-actions" onClick={e => e.stopPropagation()}>
+                <button
+                  className={`visibility-btn${inp.visible === false ? ' off' : ''}`}
+                  title={inp.visible === false ? 'Show in widget' : 'Hide from widget'}
+                  onClick={() => handleToggleVisible(idx)}
+                >
+                  {inp.visible === false ? 'Hidden' : 'In widget'}
+                </button>
                 <button className="icon-btn" title="Move up" onClick={() => moveUp(idx)}>↑</button>
                 <button className="icon-btn" title="Move down" onClick={() => moveDown(idx)}>↓</button>
                 <button
