@@ -73,6 +73,13 @@ export const DEFAULT_CONFIG = {
       label: 'Risk Exposure With {productName}',
       formula: '((employees * 0.12) * (1 - incident_reduction/100) * escalation_rate * (1 - escalation_reduction/100) / 100) * Math.sqrt(employees / 10000) * (records_at_risk * cost_per_record + downtime_days * (1 - downtime_reduction/100) * daily_revenue + ir_cost + notification_legal_cost + customer_base * (post_breach_churn / 100) * customer_ltv) + (employees * 0.12) * (1 - incident_reduction/100) * hours_per_incident * (avg_salary / 2080) + employees * avg_salary * 0.05 + (annual_audit_cost + fine_exposure * 0.15) * (1 - compliance_reduction/100)',
       format: 'currency',
+      highlight: false,
+    },
+    {
+      id: 'risk_reduction',
+      label: 'Quantified Risk Reduction',
+      formula: '(((employees * 0.12) * escalation_rate / 100) * Math.sqrt(employees / 10000) * (records_at_risk * cost_per_record + downtime_days * daily_revenue + ir_cost + notification_legal_cost + customer_base * (post_breach_churn / 100) * customer_ltv) + (employees * 0.12) * hours_per_incident * (avg_salary / 2080) + employees * avg_salary * 0.05 + annual_audit_cost + fine_exposure * 0.15) - (((employees * 0.12) * (1 - incident_reduction/100) * escalation_rate * (1 - escalation_reduction/100) / 100) * Math.sqrt(employees / 10000) * (records_at_risk * cost_per_record + downtime_days * (1 - downtime_reduction/100) * daily_revenue + ir_cost + notification_legal_cost + customer_base * (post_breach_churn / 100) * customer_ltv) + (employees * 0.12) * (1 - incident_reduction/100) * hours_per_incident * (avg_salary / 2080) + employees * avg_salary * 0.05 + (annual_audit_cost + fine_exposure * 0.15) * (1 - compliance_reduction/100))',
+      format: 'currency',
       highlight: true,
     },
   ],
