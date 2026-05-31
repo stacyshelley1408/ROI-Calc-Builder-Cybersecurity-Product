@@ -1,11 +1,45 @@
-import { useState } from 'react'
-import { encodeConfig } from '../encodeConfig'
+import { useState, useEffect, useRef } from 'react'
+import { encodeConfig, decodeConfig } from '../encodeConfig'
+import { slugify } from '../utils'
 
-export default function EmbedCode({ config }) {
+export default function EmbedCode({ config, loadConfig }) {
   const [copied, setCopied] = useState(false)
+  const [importText, setImportText] = useState('')
+  const [importError, setImportError] = useState('')
+  const [importSuccess, setImportSuccess] = useState(false)
+  const importTimerRef = useRef(null)
+
+  useEffect(() => () => clearTimeout(importTimerRef.current), [])
 
   const b64 = encodeConfig(config)
   const scriptTag = `<script\n  data-roi-calc\n  data-config="${b64}"\n  src="https://stacyshelley.com/roi-calculator-app/roi-widget.js">\n<\/script>`
+
+  function handleImport() {
+    setImportError('')
+    setImportSuccess(false)
+    try {
+      const match = importText.match(/data-config="([^"]+)"/)
+      if (!match) throw new Error('No data-config attribute found.')
+      const parsed = decodeConfig(match[1])
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) ||
+          !Array.isArray(parsed.inputs) || !Array.isArray(parsed.outputs)) {
+        throw new Error('Config could not be parsed.')
+      }
+      // Normalize missing ids so list keys stay stable
+      const normalized = {
+        ...parsed,
+        inputs: parsed.inputs.map((inp, i) => ({ ...inp, id: inp.id || slugify(inp.label || '', `input_${i}`) })),
+        outputs: parsed.outputs.map((out, i) => ({ ...out, id: out.id || slugify(out.label || '', `output_${i}`) })),
+      }
+      loadConfig(normalized)
+      setImportText('')
+      setImportSuccess(true)
+      clearTimeout(importTimerRef.current)
+      importTimerRef.current = setTimeout(() => setImportSuccess(false), 3000)
+    } catch (e) {
+      setImportError(e.message || 'Could not load that embed code.')
+    }
+  }
 
   function handleCopy() {
     navigator.clipboard.writeText(scriptTag).then(() => {
@@ -64,6 +98,32 @@ export default function EmbedCode({ config }) {
           {JSON.stringify(config, null, 2)}
         </pre>
       </div>
+      <h3 style={{ marginTop: 24 }}>Load Existing Calculator</h3>
+      <div className="embed-note" style={{ marginBottom: 10 }}>
+        Paste your existing embed tag below to reload its configuration into the builder.
+      </div>
+      <textarea
+        className="form-input mono"
+        rows={4}
+        placeholder={'<script data-roi-calc data-config="..." src="..."></script>'}
+        value={importText}
+        onChange={e => { setImportText(e.target.value); setImportError(''); setImportSuccess(false) }}
+        style={{ resize: 'vertical', marginBottom: 8 }}
+      />
+      {importError && (
+        <div style={{ fontSize: '.72rem', color: '#ef4444', marginBottom: 8 }}>{importError}</div>
+      )}
+      {importSuccess && (
+        <div style={{ fontSize: '.72rem', color: 'var(--accent)', marginBottom: 8 }}>Configuration loaded.</div>
+      )}
+      <button
+        className="btn-primary"
+        onClick={handleImport}
+        disabled={!importText.trim()}
+        style={{ width: '100%' }}
+      >
+        Load
+      </button>
     </div>
     </div>
   )

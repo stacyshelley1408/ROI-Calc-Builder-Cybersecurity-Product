@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { version } from '../package.json'
 import './App.css'
 import StepNav from './components/StepNav'
 import LivePreview from './components/LivePreview'
@@ -97,10 +98,26 @@ const STEPS = [
   { id: 'cta', label: 'Call to Action' },
 ]
 
+const LS_KEY = 'roi-calc-builder-config'
+
 export default function App() {
-  const [config, setConfig] = useState(DEFAULT_CONFIG)
+  const [config, setConfig] = useState(() => {
+    try {
+      const saved = localStorage.getItem(LS_KEY)
+      if (saved) return JSON.parse(saved)
+    } catch {}
+    return DEFAULT_CONFIG
+  })
   const [step, setStep] = useState('info')
   const [rightTab, setRightTab] = useState('preview')
+
+  useEffect(() => {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(config)) } catch {}
+  }, [config])
+
+  function loadConfig(newConfig) {
+    setConfig(newConfig)
+  }
 
   function update(partial) {
     setConfig(c => ({ ...c, ...partial }))
@@ -131,7 +148,7 @@ export default function App() {
           <div className="logo-icon">📊</div>
           ROI Calculator Builder
         </div>
-        <div className="app-header-badge">BETA</div>
+        <div className="app-header-badge">v{version}</div>
       </header>
 
       <div className="app-body">
@@ -165,7 +182,7 @@ export default function App() {
             {rightTab === 'preview' ? (
               <LivePreview config={config} />
             ) : (
-              <EmbedCode config={config} />
+              <EmbedCode config={config} loadConfig={loadConfig} />
             )}
           </div>
         </aside>

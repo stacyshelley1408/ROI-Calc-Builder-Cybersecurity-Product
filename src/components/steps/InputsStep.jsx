@@ -1,11 +1,5 @@
 import { useState } from 'react'
-
-function slugify(str) {
-  return str
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '') || 'field'
-}
+import { slugify } from '../../utils'
 
 function newInput() {
   return {
@@ -188,7 +182,7 @@ export default function InputsStep({ config, setInputs }) {
 
   function handleToggleVisible(idx) {
     const inputs = config.inputs.map((inp, i) =>
-      i === idx ? { ...inp, visible: inp.visible === false ? true : false } : inp
+      i === idx ? { ...inp, visible: inp.visible === false } : inp
     )
     setInputs(inputs)
   }
@@ -212,7 +206,7 @@ export default function InputsStep({ config, setInputs }) {
 
       <div className="item-list">
         {config.inputs.map((inp, idx) => (
-          <div key={inp.id + idx} className={`item-card${inp.visible === false ? ' input-hidden' : ''}`}>
+          <div key={inp.id || String(idx)} className={`item-card${inp.visible === false ? ' input-hidden' : ''}`}>
             <div className="item-card-head" onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}>
               <div className="item-card-info">
                 <div className="item-card-name">{inp.label || '(untitled)'}</div>

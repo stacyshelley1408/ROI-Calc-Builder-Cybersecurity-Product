@@ -1,8 +1,5 @@
 import { useState } from 'react'
-
-function slugify(str) {
-  return str.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'output'
-}
+import { slugify } from '../../utils'
 
 function newOutput() {
   return { id: '', label: '', formula: '', format: 'currency', highlight: false }
@@ -11,7 +8,14 @@ function newOutput() {
 function checkFormula(formula, inputIds) {
   const missing = []
   const tokens = formula.match(/\b[a-z_][a-z0-9_]*\b/gi) || []
-  const mathBuiltins = new Set(['Math', 'abs', 'min', 'max', 'round', 'floor', 'ceil', 'sqrt', 'pow'])
+  const mathBuiltins = new Set([
+    'Math', 'Infinity', 'NaN', 'isFinite', 'isNaN', 'parseFloat', 'parseInt',
+    'abs', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atanh', 'atan2',
+    'ceil', 'cbrt', 'cos', 'cosh', 'exp', 'expm1', 'floor', 'fround',
+    'hypot', 'imul', 'log', 'log1p', 'log2', 'log10', 'max', 'min',
+    'pow', 'random', 'round', 'sign', 'sin', 'sinh', 'sqrt', 'tan', 'tanh', 'trunc',
+    'PI', 'E', 'LN2', 'LN10', 'LOG2E', 'LOG10E', 'SQRT2', 'SQRT1_2',
+  ])
   tokens.forEach(tok => {
     if (!mathBuiltins.has(tok) && !/^\d/.test(tok) && !inputIds.includes(tok)) {
       missing.push(tok)
@@ -38,7 +42,7 @@ function OutputForm({ output, inputIds, onSave, onCancel }) {
   function set(k, v) {
     setDraft(d => {
       const next = { ...d, [k]: v }
-      if (k === 'label' && !output.id) next.id = slugify(v)
+      if (k === 'label' && !output.id) next.id = slugify(v, 'output')
       return next
     })
   }
@@ -49,7 +53,7 @@ function OutputForm({ output, inputIds, onSave, onCancel }) {
 
   function handleSave() {
     if (!draft.label.trim() || !draft.formula.trim()) return
-    onSave({ ...draft, id: draft.id || slugify(draft.label) })
+    onSave({ ...draft, id: draft.id || slugify(draft.label, 'output') })
   }
 
   return (
@@ -193,7 +197,7 @@ export default function OutputsStep({ config, setOutputs }) {
 
       <div className="item-list">
         {config.outputs.map((out, idx) => (
-          <div key={out.id + idx} className="item-card">
+          <div key={out.id || String(idx)} className="item-card">
             <div className="item-card-head" onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}>
               <div className="item-card-info">
                 <div className="item-card-name">
